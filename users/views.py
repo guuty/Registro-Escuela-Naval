@@ -7,8 +7,7 @@ from .forms import RegisterForm, AlumnoForm
 from .models import Alumno
 from .utils import generar_pdf_alumno
 from django.http import HttpResponse
-import socket 
-
+import socket
 
 
 def home(request):
@@ -21,14 +20,14 @@ def register(request):
         if form.is_valid():
             user = form.save()
             
-            # Enviar correo de bienvenida
-            send_mail(
-                subject='¡Bienvenido a la Escuela Naval!',
-                message=f'Hola {user.username},\n\nGracias por alistarte en nuestra Escuela Naval.\n\n¡Bienvenido a bordo!\n\n— Honor, Valor y Lealtad —',
-                from_email=settings.EMAIL_HOST_USER if hasattr(settings, 'EMAIL_HOST_USER') else 'noreply@escuelanaval.com',
-                recipient_list=[user.email],
-                fail_silently=True,
-            )
+            # EMAIL DESACTIVADO TEMPORALMENTE
+            # send_mail(
+            #     subject='¡Bienvenido a la Escuela Naval!',
+            #     message=f'Hola {user.username},\n\nGracias por alistarte en nuestra Escuela Naval.\n\n¡Bienvenido a bordo!\n\n— Honor, Valor y Lealtad —',
+            #     from_email=settings.EMAIL_HOST_USER if hasattr(settings, 'EMAIL_HOST_USER') else 'noreply@escuelanaval.com',
+            #     recipient_list=[user.email],
+            #     fail_silently=True,
+            # )
             
             messages.success(request, '¡Te has alistado exitosamente! Ya puedes embarcar.')
             return redirect('login')
@@ -53,17 +52,17 @@ def crear_alumno(request):
             alumno.usuario = request.user
             alumno.save()
             
-            # Enviar notificación al profesor
-            try:
-                send_mail(
-                    subject=f'Nuevo Cadete Registrado: {alumno.nombre} {alumno.apellido}',
-                    message=f'Se ha registrado un nuevo cadete:\n\nNombre: {alumno.nombre} {alumno.apellido}\nDNI: {alumno.dni}\nUsuario: {request.user.username}\n\n— Escuela Naval —',
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=['ematevez@gmail.com'],
-                    fail_silently=True,
-                )
-            except Exception as e:
-                print(f"Error enviando email: {e}")
+            # EMAIL AL PROFESOR DESACTIVADO TEMPORALMENTE
+            # try:
+            #     send_mail(
+            #         subject=f'Nuevo Cadete Registrado: {alumno.nombre} {alumno.apellido}',
+            #         message=f'Se ha registrado un nuevo cadete:\n\nNombre: {alumno.nombre} {alumno.apellido}\nDNI: {alumno.dni}\nUsuario: {request.user.username}\n\n— Escuela Naval —',
+            #         from_email=settings.DEFAULT_FROM_EMAIL,
+            #         recipient_list=['ematevez@gmail.com'],
+            #         fail_silently=True,
+            #     )
+            # except Exception as e:
+            #     print(f"Error enviando email: {e}")
             
             messages.success(request, '¡Cadete registrado exitosamente!')
             return redirect('dashboard')
@@ -103,41 +102,13 @@ def eliminar_alumno(request, pk):
 
 @login_required
 def enviar_pdf_alumno(request, pk):
-    alumno = get_object_or_404(Alumno, pk=pk, usuario=request.user)
-    
-    # Generar PDF
-    try:
-        pdf_buffer = generar_pdf_alumno(alumno)
-    except Exception as e:
-        messages.error(request, f'Error generando PDF: {str(e)}')
-        return redirect('dashboard')
-    
-    # Crear email con adjunto
-    try:
-        # Configurar timeout para la conexión
-        socket.setdefaulttimeout(60)  # ← AGREGADO AQUÍ
-        
-        email = EmailMessage(
-            subject=f'📋 Ficha de Cadete: {alumno.nombre} {alumno.apellido}',
-            body=f'Estimado/a,\n\nAdjunto encontrará la ficha del cadete {alumno.nombre} {alumno.apellido}.\n\n— Escuela Naval —\nHonor, Valor y Lealtad',
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[request.user.email],
-        )
-        
-        email.attach(
-            f'ficha_cadete_{alumno.nombre}_{alumno.apellido}.pdf',
-            pdf_buffer.getvalue(),
-            'application/pdf'
-        )
-        
-        # Enviar con fail_silently=True para no bloquear
-        email.send(fail_silently=True)  # ← YA ESTABA BIEN
-        messages.success(request, f'📧 PDF enviado (puede tardar unos minutos en llegar)')
-        
-    except Exception as e:
-        messages.warning(request, f'⚠️ El PDF se generó pero hubo un problema al enviar: {str(e)}')
-    
+    """
+    FUNCIÓN DESACTIVADA - Use descargar_pdf_alumno en su lugar
+    Los emails causan timeout en Render gratuito
+    """
+    messages.warning(request, '⚠️ El envío por email no está disponible. Por favor descarga el PDF.')
     return redirect('dashboard')
+
 
 @login_required
 def descargar_pdf_alumno(request, pk):
