@@ -11,4 +11,5 @@ urlpatterns = [
     path('alumnos/editar/<int:pk>/', views.editar_alumno, name='editar_alumno'),
     path('alumnos/eliminar/<int:pk>/', views.eliminar_alumno, name='eliminar_alumno'),
     path('alumnos/enviar-pdf/<int:pk>/', views.enviar_pdf_alumno, name='enviar_pdf_alumno'),
+    path('alumnos/descargar-pdf/<int:pk>/', views.descargar_pdf_alumno, name='descargar_pdf_alumno'),
 ]

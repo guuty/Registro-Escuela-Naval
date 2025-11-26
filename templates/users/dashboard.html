@@ -33,7 +33,8 @@
                                     <td>{{ alumno.edad }} años</td>
                                     <td>{{ alumno.carrera }}</td>
                                     <td>
-                                        <a href="{% url 'enviar_pdf_alumno' alumno.pk %}" class="btn btn-sm btn-success">📄 PDF</a>
+                                        <a href="{% url 'descargar_pdf_alumno' alumno.pk %}" class="btn btn-sm btn-info">⬇️ PDF</a>
+                                        <a href="{% url 'enviar_pdf_alumno' alumno.pk %}" class="btn btn-sm btn-success">📧 Enviar</a>
                                         <a href="{% url 'editar_alumno' alumno.pk %}" class="btn btn-sm btn-warning">✏️ Editar</a>
                                         <a href="{% url 'eliminar_alumno' alumno.pk %}" class="btn btn-sm btn-danger">🗑️ Eliminar</a>
                                     </td>

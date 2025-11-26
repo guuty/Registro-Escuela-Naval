@@ -6,7 +6,7 @@ from django.conf import settings
 from .forms import RegisterForm, AlumnoForm
 from .models import Alumno
 from .utils import generar_pdf_alumno
-
+from django.http import HttpResponse
 
 def home(request):
     return render(request, 'users/home.html')
@@ -93,25 +93,38 @@ def enviar_pdf_alumno(request, pk):
     pdf_buffer = generar_pdf_alumno(alumno)
     
     # Crear email con adjunto
-    email = EmailMessage(
-        subject=f'📋 Ficha de Cadete: {alumno.nombre} {alumno.apellido}',
-        body=f'Estimado/a,\n\nAdjunto encontrará la ficha del cadete {alumno.nombre} {alumno.apellido}.\n\n— Escuela Naval —\nHonor, Valor y Lealtad',
-        from_email=settings.EMAIL_HOST_USER if hasattr(settings, 'EMAIL_HOST_USER') else 'noreply@escuelanaval.com',
-        to=[request.user.email],
-    )
-    
-    # Adjuntar PDF
-    email.attach(
-        f'ficha_cadete_{alumno.nombre}_{alumno.apellido}.pdf',
-        pdf_buffer.getvalue(),
-        'application/pdf'
-    )
-    
-    # Enviar
     try:
-        email.send()
+        email = EmailMessage(
+            subject=f'📋 Ficha de Cadete: {alumno.nombre} {alumno.apellido}',
+            body=f'Estimado/a,\n\nAdjunto encontrará la ficha del cadete {alumno.nombre} {alumno.apellido}.\n\n— Escuela Naval —\nHonor, Valor y Lealtad',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[request.user.email],
+        )
+        
+        # Adjuntar PDF
+        email.attach(
+            f'ficha_cadete_{alumno.nombre}_{alumno.apellido}.pdf',
+            pdf_buffer.getvalue(),
+            'application/pdf'
+        )
+        
+        # Enviar con timeout
+        email.send(fail_silently=False)
         messages.success(request, f'📧 PDF enviado exitosamente a {request.user.email}')
     except Exception as e:
-        messages.error(request, f'Error al enviar el correo: {str(e)}')
+        messages.warning(request, f'⚠️ No se pudo enviar el correo. El PDF se generó correctamente.')
     
     return redirect('dashboard')
+
+@login_required
+def descargar_pdf_alumno(request, pk):
+    alumno = get_object_or_404(Alumno, pk=pk, usuario=request.user)
+    
+    # Generar PDF
+    pdf_buffer = generar_pdf_alumno(alumno)
+    
+    # Crear respuesta HTTP con el PDF
+    response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="ficha_cadete_{alumno.nombre}_{alumno.apellido}.pdf"'
+    
+    return response
