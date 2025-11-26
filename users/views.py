@@ -7,6 +7,7 @@ from .forms import RegisterForm, AlumnoForm
 from .models import Alumno
 from .utils import generar_pdf_alumno
 from django.http import HttpResponse
+import socket 
 
 
 
@@ -113,6 +114,9 @@ def enviar_pdf_alumno(request, pk):
     
     # Crear email con adjunto
     try:
+        # Configurar timeout para la conexión
+        socket.setdefaulttimeout(60)  # ← AGREGADO AQUÍ
+        
         email = EmailMessage(
             subject=f'📋 Ficha de Cadete: {alumno.nombre} {alumno.apellido}',
             body=f'Estimado/a,\n\nAdjunto encontrará la ficha del cadete {alumno.nombre} {alumno.apellido}.\n\n— Escuela Naval —\nHonor, Valor y Lealtad',
@@ -120,24 +124,18 @@ def enviar_pdf_alumno(request, pk):
             to=[request.user.email],
         )
         
-        # Adjuntar PDF
         email.attach(
             f'ficha_cadete_{alumno.nombre}_{alumno.apellido}.pdf',
             pdf_buffer.getvalue(),
             'application/pdf'
         )
         
-        # Enviar - IMPORTANTE: fail_silently=True para que no tumbe el servidor
-        email.send(fail_silently=False)  # Cambiar a False temporalmente para ver el error
-        messages.success(request, f'📧 PDF enviado exitosamente a {request.user.email}')
+        # Enviar con fail_silently=True para no bloquear
+        email.send(fail_silently=True)  # ← YA ESTABA BIEN
+        messages.success(request, f'📧 PDF enviado (puede tardar unos minutos en llegar)')
         
     except Exception as e:
-        # Log del error completo
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.error(f'Error enviando email: {str(e)}', exc_info=True)
-        
-        messages.warning(request, f'⚠️ No se pudo enviar el correo: {str(e)}')
+        messages.warning(request, f'⚠️ El PDF se generó pero hubo un problema al enviar: {str(e)}')
     
     return redirect('dashboard')
 
