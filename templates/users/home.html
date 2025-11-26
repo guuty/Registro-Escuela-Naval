@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Escuela Naval - Inicio{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8 text-center">
+        <div class="mb-4">
+            <span style="font-size: 5rem;">🚢</span>
+        </div>
+        <h1 class="display-4 mb-4">Escuela Naval</h1>
+        <p class="lead mb-2" style="color: var(--blanco-hueso);">Sistema de Registro de Cadetes</p>
+        <p class="text-muted mb-5" style="color: rgba(245,245,240,0.6) !important;">"Honor, Valor y Lealtad"</p>
+        
+        {% if user.is_authenticated %}
+            <div class="card p-5">
+                <h3>🎖️ Bienvenido a bordo, {{ user.username }}</h3>
+                <p class="mt-3" style="color: var(--blanco-hueso);">Has embarcado correctamente en el sistema.</p>
+                <p style="color: rgba(245,245,240,0.7);">Tu correo de oficial: <strong style="color: var(--dorado);">{{ user.email }}</strong></p>
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary">⚓ Panel de Control</a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-primary">Desembarcar</a>
+                </div>
+            </div>
+        {% else %}
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg">🚢 Embarcar</a>
+                <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg">📋 Alistarse</a>
+            </div>
+            
+            <div class="row mt-5 pt-5">
+                <div class="col-md-4">
+                    <div class="card p-4 text-center h-100">
+                        <span style="font-size: 2.5rem;">⚓</span>
+                        <h5 class="mt-3">Tradición</h5>
+                        <p style="color: rgba(245,245,240,0.7);">Más de 100 años formando oficiales de mar</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card p-4 text-center h-100">
+                        <span style="font-size: 2.5rem;">🎖️</span>
+                        <h5 class="mt-3">Excelencia</h5>
+                        <p style="color: rgba(245,245,240,0.7);">Formación integral de clase mundial</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card p-4 text-center h-100">
+                        <span style="font-size: 2.5rem;">🌊</span>
+                        <h5 class="mt-3">Servicio</h5>
+                        <p style="color: rgba(245,245,240,0.7);">Protegiendo nuestros mares con honor</p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

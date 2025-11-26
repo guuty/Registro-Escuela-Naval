@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Cadete - Escuela Naval{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card p-4 text-center">
+            <span style="font-size: 4rem;">⚠️</span>
+            <h2 class="mt-3">Dar de Baja</h2>
+            <p style="color: rgba(245,245,240,0.7);" class="mt-3">
+                ¿Estás seguro que deseas dar de baja al cadete?
+            </p>
+            
+            <div class="card p-3 my-4" style="background: rgba(220,53,69,0.2); border-color: #dc3545;">
+                <h4 style="color: var(--blanco-hueso);">🎖️ {{ alumno.nombre }} {{ alumno.apellido }}</h4>
+                <p class="mb-1" style="color: rgba(245,245,240,0.7);">📧 {{ alumno.email }}</p>
+                <p class="mb-0" style="color: rgba(245,245,240,0.7);">🚢 División: {{ alumno.carrera }}</p>
+            </div>
+            
+            <p style="color: #ffcccb;" class="small">
+                Esta acción no se puede deshacer
+            </p>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <div class="d-flex gap-2 justify-content-center mt-4">
+                    <button type="submit" class="btn btn-danger">🗑️ Confirmar Baja</button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

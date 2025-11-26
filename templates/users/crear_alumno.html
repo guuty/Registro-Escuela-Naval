@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Registrar Cadete - Escuela Naval{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <div class="text-center mb-4">
+                <span style="font-size: 3rem;">📋</span>
+                <h2 class="mt-2">Registrar Nuevo Cadete</h2>
+                <p style="color: rgba(245,245,240,0.6);">Ingresa los datos del nuevo miembro de la flota</p>
+            </div>
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="nombre" class="form-label">🎖️ Nombre</label>
+                        {{ form.nombre }}
+                        {% if form.nombre.errors %}
+                            <small class="text-danger">{{ form.nombre.errors.0 }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="apellido" class="form-label">Apellido</label>
+                        {{ form.apellido }}
+                        {% if form.apellido.errors %}
+                            <small class="text-danger">{{ form.apellido.errors.0 }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="email" class="form-label">📧 Correo Naval</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <small class="text-danger">{{ form.email.errors.0 }}</small>
+                    {% endif %}
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="edad" class="form-label">📅 Edad</label>
+                        {{ form.edad }}
+                        {% if form.edad.errors %}
+                            <small class="text-danger">{{ form.edad.errors.0 }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="carrera" class="form-label">🚢 División</label>
+                        {{ form.carrera }}
+                        {% if form.carrera.errors %}
+                            <small class="text-danger">{{ form.carrera.errors.0 }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary flex-grow-1">⚓ Registrar Cadete</button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

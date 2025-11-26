@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel de Control - Escuela Naval{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>⚓ Registro de Cadetes</h2>
+            <a href="{% url 'crear_alumno' %}" class="btn btn-primary">+ Nuevo Cadete</a>
+        </div>
+
+        {% if alumnos %}
+            <div class="card p-3">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>🎖️ Nombre</th>
+                                <th>Apellido</th>
+                                <th>📧 Correo</th>
+                                <th>Edad</th>
+                                <th>🚢 División</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for alumno in alumnos %}
+                                <tr>
+                                    <td>{{ alumno.nombre }}</td>
+                                    <td>{{ alumno.apellido }}</td>
+                                    <td>{{ alumno.email }}</td>
+                                    <td>{{ alumno.edad }} años</td>
+                                    <td>{{ alumno.carrera }}</td>
+                                    <td>
+                                        <a href="{% url 'enviar_pdf_alumno' alumno.pk %}" class="btn btn-sm btn-success">📄 PDF</a>
+                                        <a href="{% url 'editar_alumno' alumno.pk %}" class="btn btn-sm btn-warning">✏️ Editar</a>
+                                        <a href="{% url 'eliminar_alumno' alumno.pk %}" class="btn btn-sm btn-danger">🗑️ Eliminar</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4" style="color: rgba(245,245,240,0.6);">
+                <p>Total de cadetes en la flota: <strong style="color: var(--dorado);">{{ alumnos.count }}</strong></p>
+            </div>
+        {% else %}
+            <div class="card p-5 text-center">
+                <span style="font-size: 4rem;">🚢</span>
+                <h4 class="mt-3">No hay cadetes en la flota</h4>
+                <p style="color: rgba(245,245,240,0.6);">Comienza registrando tu primer cadete naval</p>
+                <div class="mt-3">
+                    <a href="{% url 'crear_alumno' %}" class="btn btn-primary">+ Registrar Primer Cadete</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

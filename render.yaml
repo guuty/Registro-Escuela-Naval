@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: escuela-naval
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: EMAIL_HOST_USER
+        value: "gustavoleonelferreyra@gmail.com"
+      - key: EMAIL_HOST_PASSWORD
+        sync: false

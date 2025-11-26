@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Embarcar - Escuela Naval{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card p-4">
+            <div class="text-center mb-4">
+                <span style="font-size: 3rem;">🚢</span>
+                <h2 class="mt-2">Embarcar</h2>
+                <p style="color: rgba(245,245,240,0.6);">Ingresa tus credenciales de oficial</p>
+            </div>
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="username" class="form-label">🎖️ Código de Oficial</label>
+                    <input type="text" name="username" class="form-control" id="username" placeholder="Tu nombre de usuario" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="password" class="form-label">🔐 Contraseña</label>
+                    <input type="password" name="password" class="form-control" id="password" placeholder="Tu contraseña secreta" required>
+                </div>
+                
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        ⚠️ Credenciales incorrectas. Acceso denegado.
+                    </div>
+                {% endif %}
+                
+                <button type="submit" class="btn btn-primary w-100">⚓ Embarcar</button>
+            </form>
+            
+            <hr class="my-4" style="border-color: var(--dorado);">
+            
+            <p class="text-center mb-0" style="color: rgba(245,245,240,0.7);">
+                ¿Nuevo recluta? <a href="{% url 'register' %}">Alístate aquí</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
