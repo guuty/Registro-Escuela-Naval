@@ -8,6 +8,8 @@ from .models import Alumno
 from .utils import generar_pdf_alumno
 from django.http import HttpResponse
 
+
+
 def home(request):
     return render(request, 'users/home.html')
 
@@ -49,6 +51,19 @@ def crear_alumno(request):
             alumno = form.save(commit=False)
             alumno.usuario = request.user
             alumno.save()
+            
+            # Enviar notificación al profesor
+            try:
+                send_mail(
+                    subject=f'Nuevo Cadete Registrado: {alumno.nombre} {alumno.apellido}',
+                    message=f'Se ha registrado un nuevo cadete:\n\nNombre: {alumno.nombre} {alumno.apellido}\nDNI: {alumno.dni}\nUsuario: {request.user.username}\n\n— Escuela Naval —',
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=['ematevez@gmail.com'],
+                    fail_silently=True,
+                )
+            except Exception as e:
+                print(f"Error enviando email: {e}")
+            
             messages.success(request, '¡Cadete registrado exitosamente!')
             return redirect('dashboard')
     else:
@@ -90,7 +105,11 @@ def enviar_pdf_alumno(request, pk):
     alumno = get_object_or_404(Alumno, pk=pk, usuario=request.user)
     
     # Generar PDF
-    pdf_buffer = generar_pdf_alumno(alumno)
+    try:
+        pdf_buffer = generar_pdf_alumno(alumno)
+    except Exception as e:
+        messages.error(request, f'Error generando PDF: {str(e)}')
+        return redirect('dashboard')
     
     # Crear email con adjunto
     try:
@@ -108,11 +127,17 @@ def enviar_pdf_alumno(request, pk):
             'application/pdf'
         )
         
-        # Enviar con timeout
-        email.send(fail_silently=False)
+        # Enviar - IMPORTANTE: fail_silently=True para que no tumbe el servidor
+        email.send(fail_silently=False)  # Cambiar a False temporalmente para ver el error
         messages.success(request, f'📧 PDF enviado exitosamente a {request.user.email}')
+        
     except Exception as e:
-        messages.warning(request, f'⚠️ No se pudo enviar el correo. El PDF se generó correctamente.')
+        # Log del error completo
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f'Error enviando email: {str(e)}', exc_info=True)
+        
+        messages.warning(request, f'⚠️ No se pudo enviar el correo: {str(e)}')
     
     return redirect('dashboard')
 
